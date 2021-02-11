@@ -1,7 +1,7 @@
 import { App } from '@aws-cdk/core';
 import { VPCStack } from '../lib/vpc-stack';
 import { RDSStack } from '../lib/rds-stack';
-import { ECSStack } from '../lib/ecs-stack';
+import { ECSEC2Stack } from '../lib/ecs-ec2-stack';
 import { config } from "dotenv";
 config();
 
@@ -19,10 +19,10 @@ const rdsStack = new RDSStack(app, 'RDSStack', {
     dbName: DB_NAME
 });
 
-const ecsStack = new ECSStack(app, "ECSStack", {
+const ecsec2Stack = new ECSEC2Stack(app, "ECSEC2Stack", {
     vpc: vpcStack.vpc,
     dbSecretArn: rdsStack.dbSecret.secretArn
 });
 
 rdsStack.addDependency(vpcStack);
-ecsStack.addDependency(rdsStack);
+ecsec2Stack.addDependency(rdsStack);
