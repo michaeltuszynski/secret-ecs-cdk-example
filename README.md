@@ -53,3 +53,7 @@ Next - run the main URL:
     * The typescript app gets those environment variables to build the connection string to the database to fetch the output
 
 Open the console and explore the created resources (VPC, RDS, Secrets Manager, ECS Cluster)
+
+### Cleanup
+
+Run `cdk destroy --all`
