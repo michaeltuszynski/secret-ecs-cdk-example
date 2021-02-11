@@ -7,7 +7,7 @@ config();
 
 const app = new App();
 
-const VPC_NAME = "DemoVPC123";
+const VPC_NAME = "DemoVPC321";
 const DB_NAME = "tododb"
 
 const vpcStack = new VPCStack(app, 'VPCStack', {
