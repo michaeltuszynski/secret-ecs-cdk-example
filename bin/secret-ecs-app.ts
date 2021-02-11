@@ -1,15 +1,12 @@
-import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { VPCStack } from '../lib/vpc-stack';
 import { RDSStack } from '../lib/rds-stack';
 import { ECSStack } from '../lib/ecs-stack';
 import { config } from "dotenv";
 config();
 
-const app = new cdk.App();
+const app = new App();
 
-const AWS_ACCOUNT = '588795091775';
-const AWS_REGION = 'us-west-2';
 const VPC_NAME = "DemoVPC123";
 const DB_NAME = "tododb"
 
@@ -24,7 +21,7 @@ const rdsStack = new RDSStack(app, 'RDSStack', {
 
 const ecsStack = new ECSStack(app, "ECSStack", {
     vpc: vpcStack.vpc,
-    dbSecret: rdsStack.dbSecret.secretArn
+    dbSecretArn: rdsStack.dbSecret.secretArn
 });
 
 rdsStack.addDependency(vpcStack);

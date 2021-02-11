@@ -1,4 +1,3 @@
-import * as cdk from "@aws-cdk/core";
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Vpc } from '@aws-cdk/aws-ec2'
 
@@ -8,7 +7,6 @@ export interface VPCStackProps extends StackProps {
 
 export class VPCStack extends Stack {
     readonly vpc: Vpc;
-
 
     constructor(scope: App, id: string, props: VPCStackProps) {
         super(scope, id, props);
