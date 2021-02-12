@@ -2,11 +2,10 @@ import { App, Stack, StackProps, CfnOutput } from '@aws-cdk/core';
 import { Vpc }from "@aws-cdk/aws-ec2";
 import { Cluster, ContainerImage, Secret as ECSSecret }from "@aws-cdk/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
-import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { StringParameter } from '@aws-cdk/aws-ssm';
 
 export interface ECSStackProps extends StackProps {
-  vpc: Vpc,
-  dbSecretArn: string
+  vpc: Vpc
 }
 
 export class ECSStack extends Stack {
@@ -20,8 +19,15 @@ export class ECSStack extends Stack {
 
     const cluster = new Cluster(this, 'Cluster', { vpc });
 
-    const creds = Secret.fromSecretCompleteArn(this, 'pgcreds', props.dbSecretArn);
-  
+    const DBHOST = StringParameter.fromStringParameterName(this, 'dbEndpoint', 'DBHost');
+    const DBPORT = StringParameter.fromStringParameterName(this, 'dbbPort', 'DBPort');
+    const DBNAME = StringParameter.fromStringParameterName(this, 'dbName', 'DBName');
+    const DBUSER = StringParameter.fromStringParameterName(this, 'dbUser', 'DBUsername');
+    const DBPASS = StringParameter.fromSecureStringParameterAttributes(this, 'dbPass', {
+        parameterName: 'DBPass',
+        version: 1
+    });
+
     const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
       cluster,
       taskImageOptions: {
@@ -29,11 +35,11 @@ export class ECSStack extends Stack {
         containerPort: containerPort,
         enableLogging: true,
         secrets: {
-          POSTGRES_USER: ECSSecret.fromSecretsManager(creds!, 'username'),
-          POSTGRES_PASS: ECSSecret.fromSecretsManager(creds!, 'password'),
-          POSTGRES_HOST: ECSSecret.fromSecretsManager(creds!, 'host'),
-          POSTGRES_PORT: ECSSecret.fromSecretsManager(creds!, 'port'),
-          POSTGRES_NAME: ECSSecret.fromSecretsManager(creds!, 'dbname')
+          POSTGRES_USER: ECSSecret.fromSsmParameter(DBUSER),
+          POSTGRES_HOST: ECSSecret.fromSsmParameter(DBHOST),
+          POSTGRES_PORT: ECSSecret.fromSsmParameter(DBPORT),
+          POSTGRES_NAME: ECSSecret.fromSsmParameter(DBNAME),
+          POSTGRES_PASS: ECSSecret.fromSsmParameter(DBPASS),
         }
       },
       desiredCount: 1,

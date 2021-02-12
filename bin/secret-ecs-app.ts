@@ -7,7 +7,7 @@ config();
 
 const app = new App();
 
-const VPC_NAME = "DemoVPC123";
+const VPC_NAME = "DemoVPC789";
 const DB_NAME = "tododb"
 
 const vpcStack = new VPCStack(app, 'VPCStack', {
@@ -20,8 +20,7 @@ const rdsStack = new RDSStack(app, 'RDSStack', {
 });
 
 const ecsStack = new ECSStack(app, "ECSStack", {
-    vpc: vpcStack.vpc,
-    dbSecretArn: rdsStack.dbSecret.secretArn
+    vpc: vpcStack.vpc
 });
 
 rdsStack.addDependency(vpcStack);
