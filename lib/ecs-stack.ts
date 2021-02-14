@@ -1,6 +1,6 @@
 import { App, Stack, StackProps, CfnOutput } from '@aws-cdk/core';
-import { Vpc }from "@aws-cdk/aws-ec2";
-import { Cluster, ContainerImage, Secret as ECSSecret }from "@aws-cdk/aws-ecs";
+import { Vpc } from "@aws-cdk/aws-ec2";
+import { Cluster, ContainerImage, Secret as ECSSecret } from "@aws-cdk/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 
@@ -24,8 +24,8 @@ export class ECSStack extends Stack {
     const DBNAME = StringParameter.fromStringParameterName(this, 'dbName', 'DBName');
     const DBUSER = StringParameter.fromStringParameterName(this, 'dbUser', 'DBUsername');
     const DBPASS = StringParameter.fromSecureStringParameterAttributes(this, 'dbPass', {
-        parameterName: 'DBPass',
-        version: 1
+      parameterName: 'DBPass',
+      version: 1
     });
 
     const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
