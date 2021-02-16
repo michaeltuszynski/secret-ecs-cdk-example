@@ -1,12 +1,12 @@
 import { App, StackProps, Stack, CfnOutput } from "@aws-cdk/core";
-import { DatabaseSecret, DatabaseInstance, DatabaseInstanceEngine, 
-         PostgresEngineVersion, Credentials, StorageType
-       } from '@aws-cdk/aws-rds';
-import { Vpc, Port, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
+import {
+    DatabaseSecret, DatabaseInstance, DatabaseInstanceEngine,
+    PostgresEngineVersion, Credentials, StorageType
+} from '@aws-cdk/aws-rds';
+import { Vpc, Port, SubnetType, InstanceType } from '@aws-cdk/aws-ec2';
 
 export interface RDSStackProps extends StackProps {
-    vpc: Vpc,
-    dbName: string,
+    vpc: Vpc
 }
 
 export class RDSStack extends Stack {
@@ -17,35 +17,34 @@ export class RDSStack extends Stack {
     constructor(scope: App, id: string, props: RDSStackProps) {
         super(scope, id, props);
 
-        const databaseUsername = 'postgres';
-        const port = 5432;
+        const dbUser = this.node.tryGetContext("dbUser");
+        const dbName = this.node.tryGetContext("dbName");
+        const dbPort = this.node.tryGetContext("dbPort");
+        const dbInstanceType = this.node.tryGetContext("instanceType");
 
         this.dbSecret = new DatabaseSecret(this, 'DbSecret', {
-            username: databaseUsername
+            username: dbUser
         });
-       
+
         this.postgresRDSInstance = new DatabaseInstance(this, 'Postgres-rds-instance', {
             engine: DatabaseInstanceEngine.postgres({
                 version: PostgresEngineVersion.VER_12_4
             }),
-            instanceType: InstanceType.of(
-                InstanceClass.T2,
-                InstanceSize.MICRO
-            ),
+            instanceType: new InstanceType(dbInstanceType),
             vpc: props.vpc,
             vpcSubnets: { subnetType: SubnetType.PUBLIC },
-            storageEncrypted: false, 
+            storageEncrypted: false,
             multiAz: false,
             autoMinorVersionUpgrade: false,
             allocatedStorage: 25,
             storageType: StorageType.GP2,
             deletionProtection: false,
-            credentials: Credentials.fromSecret(this.dbSecret,databaseUsername),
-            databaseName: props.dbName,
-            port: port,
+            credentials: Credentials.fromSecret(this.dbSecret, dbUser),
+            databaseName: dbName,
+            port: dbPort,
         });
-        
-        this.postgresRDSInstance.connections.allowFromAnyIpv4(Port.tcp(port));
+
+        this.postgresRDSInstance.connections.allowFromAnyIpv4(Port.tcp(dbPort));
 
         new CfnOutput(this, 'POSTGRES_URL', { value: this.postgresRDSInstance.dbInstanceEndpointAddress });
 
