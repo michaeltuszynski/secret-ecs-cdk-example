@@ -8,41 +8,34 @@ Prerequisites:
 
 ## Directions:
 1) Install Node, NPM and AWS CDK and AWS CLI on your local environment (built using Node 14.15.4)
+(note in fresh c9 env or locally - recommended upgrading CDK to latest `sudo npm install -g @aws-cdk` - built w/ ver 1.89
 
 2) Run `aws configure` with appropriate Account Access Key ID, Secret Key, Region, and output format JSON
 
 3) Clone this repo
 
-4) Within this repo directory `./bin` - create a .env file with the following values
-```
-AWS_ACCOUNT_ID=<YOUR_ACCOUNT_ID>
-AWS_REGION=<YOUR_PREFERRED_REION>
-```
+4) In root of this repo, run `npm install`
 
-5) In root of this repo, run `npm install`
-
-6) Test CDK output - run `cdk synth` - you should see a dir called `cdk.out` with CFN templates created, and the following to stdout:
+5) Test CDK output - run `cdk synth` - you should see a dir called `cdk.out` with CFN templates created, and the following to stdout:
 ```
 Successfully synthesized to <YOUR PATH>/secret-ecs-cdk-example/cdk.out
 Supply a stack id (VPCStack, RDSStack, ECSStack) to display its template.
 ```
+6) `chmod +x ./cdk-deploy-to.sh`
 
-7) Deploy the stack `cdk deploy --all require-approval never`
+7) Deploy the stack `./cdk-deploy-to.sh <AWS-ACCOUNT-ID> <AWS-REGION`
+
+(if run without, will default to env vars)
 
 The deployment will take approx 10-15mins. 
 
 Note the output of the `ECSStack.LoadBalancerDNS` at the end of the process.   Take that string, and run in a terminal:
 
-`curl ECSSt-Farga-xxxxx-xxxxxx.whateverregion.elb.amazonaws.com/migrate` - this populates the DB with a single piece of data - it should return "undefined + undefined"
+`curl ECSSt-Farga-xxxxx-xxxxxx.whateverregion.elb.amazonaws.com/migrate` - this populates the DB with a single piece of data - it should return sql output of a create table and insert. 
 
 Next - run the main URL:
-`curl ECSSt-Farga-xxxxx-xxxxxx.whateverregion.elb.amazonaws.com/todos`
+open a browser to `ECSSt-Farga-xxxxx-xxxxxx.whateverregion.elb.amazonaws.com` - you should see a todo app
 
-
-### Successful output (V1 test only):
-```
-[{"id":1,"title":"Do something","description":"Do Something good","isFinished":true}]
-```
 
 ## WHAT DID THIS ALL DO??
 
@@ -56,4 +49,4 @@ Open the console and explore the created resources (VPC, RDS, Secrets Manager, E
 
 ### Cleanup
 
-Run `cdk destroy --all`
+Run `cdk destroy --all -f`
