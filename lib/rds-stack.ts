@@ -1,13 +1,13 @@
 import { App, StackProps, Stack, CfnOutput, SecretValue } from "@aws-cdk/core";
-import { DatabaseSecret, DatabaseInstance, DatabaseInstanceEngine, 
-         PostgresEngineVersion, Credentials, StorageType
-       } from '@aws-cdk/aws-rds';
-import { Vpc, Port, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
+import {
+    DatabaseInstance, DatabaseInstanceEngine,
+    PostgresEngineVersion, Credentials, StorageType
+} from '@aws-cdk/aws-rds';
+import { Vpc, Port, SubnetType, InstanceType } from '@aws-cdk/aws-ec2';
 import { StringParameter, ParameterTier } from "@aws-cdk/aws-ssm";
 
 export interface RDSStackProps extends StackProps {
-    vpc: Vpc,
-    dbName: string,
+    vpc: Vpc
 }
 
 export class RDSStack extends Stack {
@@ -17,32 +17,31 @@ export class RDSStack extends Stack {
     constructor(scope: App, id: string, props: RDSStackProps) {
         super(scope, id, props);
 
-        const databaseUsername = 'postgres';
-        const port = 5432;
-        const dbSecret = SecretValue.ssmSecure('DBPass', '1');   //NOTE: need to run cli before building stack to create this secret  - name must match
+        const dbUser = this.node.tryGetContext("dbUser");
+        const stackDBName = this.node.tryGetContext("dbName");
+        const stackDBPort = this.node.tryGetContext("dbPort");
+        const dbInstanceType = this.node.tryGetContext("instanceType");
+        const dbPass = SecretValue.ssmSecure('DBPass', '1');   //NOTE: need to run cli before building stack to create this secret `aws ssm put-parameter --name "DBPass" --value "mySecurePassword123456" --type "SecureString"`
 
         this.postgresRDSInstance = new DatabaseInstance(this, 'Postgres-rds-instance', {
             engine: DatabaseInstanceEngine.postgres({
                 version: PostgresEngineVersion.VER_12_4
             }),
-            instanceType: InstanceType.of(
-                InstanceClass.T2,
-                InstanceSize.MICRO
-            ),
+            instanceType: new InstanceType(dbInstanceType),
             vpc: props.vpc,
             vpcSubnets: { subnetType: SubnetType.PUBLIC },
-            storageEncrypted: false, 
+            storageEncrypted: false,
             multiAz: false,
             autoMinorVersionUpgrade: false,
             allocatedStorage: 25,
             storageType: StorageType.GP2,
             deletionProtection: false,
-            credentials: Credentials.fromPassword(databaseUsername, dbSecret),  
-            databaseName: props.dbName,
-            port: port,
+            credentials: Credentials.fromPassword(dbUser, dbPass),
+            databaseName: stackDBName,
+            port: stackDBPort,
         });
-        
-        this.postgresRDSInstance.connections.allowFromAnyIpv4(Port.tcp(port));
+
+        this.postgresRDSInstance.connections.allowFromAnyIpv4(Port.tcp(stackDBPort));
 
         new CfnOutput(this, 'POSTGRES_URL', { value: this.postgresRDSInstance.dbInstanceEndpointAddress });
 
@@ -66,7 +65,7 @@ export class RDSStack extends Stack {
             allowedPattern: '.*',
             description: 'DB Name from CDK Stack Creation',
             parameterName: 'DBName',
-            stringValue: props.dbName,
+            stringValue: stackDBName,
             tier: ParameterTier.STANDARD
         })
 
@@ -74,10 +73,10 @@ export class RDSStack extends Stack {
             allowedPattern: '.*',
             description: 'DB Username from CDK Stack Creation',
             parameterName: 'DBUsername',
-            stringValue: databaseUsername,
+            stringValue: dbUser,
             tier: ParameterTier.STANDARD
-        }) 
-        
+        })
+
 
     }
 }

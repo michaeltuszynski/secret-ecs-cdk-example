@@ -12,12 +12,12 @@ export class ECSStack extends Stack {
   constructor(scope: App, id: string, props: ECSStackProps) {
     super(scope, id, props);
 
-    const containerPort = 4000;
-    const containerImage = 'mptaws/secretecs';
+    const containerPort = this.node.tryGetContext("containerPort");
+    const containerImage = this.node.tryGetContext("containerImage");
 
-    const vpc = props.vpc
-
-    const cluster = new Cluster(this, 'Cluster', { vpc });
+    const cluster = new Cluster(this, 'Cluster', {
+      vpc: props.vpc
+    });
 
     const DBHOST = StringParameter.fromStringParameterName(this, 'dbEndpoint', 'DBHost');
     const DBPORT = StringParameter.fromStringParameterName(this, 'dbbPort', 'DBPort');
@@ -46,6 +46,8 @@ export class ECSStack extends Stack {
       publicLoadBalancer: true
     });
 
-    new CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
+    const outputUrl = fargateService.loadBalancer.loadBalancerDnsName;
+
+    new CfnOutput(this, 'LoadBalancerDNS', { value: outputUrl});
   }
 }
