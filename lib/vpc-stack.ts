@@ -10,7 +10,8 @@ export class VPCStack extends Stack {
         const vpcName = scope.node.tryGetContext("vpcName");
 
         this.vpc = new Vpc(this, `${vpcName}`, {
-            cidr: '10.0.0.0/16'
+            cidr: '10.0.0.0/16',
+            maxAzs: 2
         })
     }
 }
