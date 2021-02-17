@@ -1,26 +1,26 @@
 import { App, Stack, StackProps, CfnOutput } from '@aws-cdk/core';
-import { Vpc }from "@aws-cdk/aws-ec2";
-import { Cluster, ContainerImage, Secret as ECSSecret }from "@aws-cdk/aws-ecs";
+import { Vpc } from "@aws-cdk/aws-ec2";
+import { Cluster, ContainerImage, Secret as ECSSecret } from "@aws-cdk/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 
 export interface ECSStackProps extends StackProps {
-  vpc: Vpc,
+  vpc: Vpc
   dbSecretArn: string
 }
 
 export class ECSStack extends Stack {
+
   constructor(scope: App, id: string, props: ECSStackProps) {
     super(scope, id, props);
 
-    const containerPort = 4000;
-    const containerImage = 'mptaws/secretecs';
-
-    const vpc = props.vpc
-
-    const cluster = new Cluster(this, 'Cluster', { vpc });
-
+    const containerPort = this.node.tryGetContext("containerPort");
+    const containerImage = this.node.tryGetContext("containerImage");
     const creds = Secret.fromSecretCompleteArn(this, 'pgcreds', props.dbSecretArn);
+
+    const cluster = new Cluster(this, 'Cluster', {
+      vpc: props.vpc
+    });
   
     const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
       cluster,
