@@ -1,4 +1,4 @@
-####Setting up an example app using AWS Secrets Manager####
+#### Setting up an example app using AWS Secrets Manager
 
 [assumptions - Cloud9 and proper aws credentials setup]
 
