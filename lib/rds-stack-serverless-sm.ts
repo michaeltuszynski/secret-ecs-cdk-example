@@ -21,10 +21,6 @@ export class RDSStack extends Stack {
         const dbName = this.node.tryGetContext("dbName");
         const dbPort = this.node.tryGetContext("dbPort");
 
-        // this.dbSecret = new DatabaseSecret(this, 'DbSecret', {
-        //     username: dbUser
-        // });
-
         this.dbSecret = new Secret(this, 'DBCredentialsSecret', {
             secretName: "serverless-credentials",
             generateSecretString: {

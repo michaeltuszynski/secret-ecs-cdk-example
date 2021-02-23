@@ -1,4 +1,4 @@
-import { App, Stack, StackProps, CfnOutput } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Vpc } from "@aws-cdk/aws-ec2";
 import { Cluster, ContainerImage, Secret as ECSSecret } from "@aws-cdk/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
@@ -48,6 +48,5 @@ export class ECSStack extends Stack {
 
     const outputUrl = fargateService.loadBalancer.loadBalancerDnsName;
 
-    new CfnOutput(this, 'LoadBalancerDNS', { value: outputUrl});
   }
 }

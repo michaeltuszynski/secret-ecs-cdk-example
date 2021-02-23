@@ -5,7 +5,6 @@ import {
 import { Vpc, Port, SubnetType } from '@aws-cdk/aws-ec2';
 import { StringParameter, ParameterTier } from "@aws-cdk/aws-ssm";
 
-
 export interface RDSStackProps extends StackProps {
     vpc: Vpc
 }
@@ -53,7 +52,7 @@ export class RDSStack extends Stack {
             allowedPattern: '.*',
             description: 'DB Port from CDK Stack Creation',
             parameterName: 'DBPort',
-            stringValue: this.postgresRDSserverless.clusterEndpoint.port.toString(),
+            stringValue: stackDBPort.toString(),
             tier: ParameterTier.STANDARD
         });
 
