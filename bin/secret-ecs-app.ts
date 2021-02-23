@@ -1,6 +1,7 @@
 import { App } from '@aws-cdk/core';
 import { VPCStack } from '../lib/vpc-stack';
-import { RDSStack } from '../lib/rds-stack-sm';
+import { RDSStack } from '../lib/rds-stack-serverless-sm';
+//import { RDSStack } from '../lib/rds-stack-sm';
 //import { RDSStack } from '../lib/rds-stack-ssm';
 import { ECSStack } from '../lib/ecs-fargate-stack-sm';
 //import { ECSStack } from '../lib/ecs-fargate-stack-ssm'

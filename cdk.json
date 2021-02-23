@@ -13,7 +13,6 @@
     "dbUser": "postgres",
     "dbPort": 5432,
     "containerPort": 4000,
-    "containerImage": "mptaws/secretecs",
-    "instanceType": "t2.micro"
+    "containerImage": "mptaws/secretecs"
   }
 }

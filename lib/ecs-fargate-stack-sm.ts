@@ -21,7 +21,7 @@ export class ECSStack extends Stack {
     const cluster = new Cluster(this, 'Cluster', {
       vpc: props.vpc
     });
-  
+
     const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
       cluster,
       taskImageOptions: {
