@@ -33,12 +33,16 @@ export class RDSStack extends Stack {
             }
         });
 
+        // this.dbSecret = new DatabaseSecret(this, 'DBCreds', {
+        //     username: dbUser
+        // })
+
         this.postgresRDSserverless = new ServerlessCluster(this, 'Postgres-rds-serverless', {
             engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
             parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
             vpc: props.vpc,
             enableDataApi: true,
-            vpcSubnets: { subnetType: SubnetType.PUBLIC },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE },
             credentials: Credentials.fromSecret(this.dbSecret, dbUser),
             scaling: {
                 autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
@@ -59,7 +63,6 @@ export class RDSStack extends Stack {
                 secret: this.dbSecret,
                 application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
                 vpc: props.vpc,
-                vpcSubnets: { subnetType: SubnetType.PUBLIC },
                 target: this.postgresRDSserverless,
                 automaticallyAfter: Duration.days(30),
             }

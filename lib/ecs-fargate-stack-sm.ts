@@ -19,7 +19,8 @@ export class ECSStack extends Stack {
     const creds = Secret.fromSecretCompleteArn(this, 'pgcreds', props.dbSecretArn);
 
     const cluster = new Cluster(this, 'Cluster', {
-      vpc: props.vpc
+      vpc: props.vpc,
+      clusterName: 'FargateClusterDemo'
     });
 
     const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
@@ -37,7 +38,8 @@ export class ECSStack extends Stack {
         }
       },
       desiredCount: 1,
-      publicLoadBalancer: true
+      publicLoadBalancer: true,
+      serviceName: 'FargateServiceDemo'
     });
   }
 }
