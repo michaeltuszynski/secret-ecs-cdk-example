@@ -3,7 +3,7 @@ import {
     DatabaseSecret, Credentials, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit
 } from '@aws-cdk/aws-rds';
 import { Vpc, Port, SubnetType } from '@aws-cdk/aws-ec2';
-import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { Secret, SecretRotation, SecretRotationApplication } from '@aws-cdk/aws-secretsmanager';
 
 export interface RDSStackProps extends StackProps {
     vpc: Vpc
@@ -51,6 +51,20 @@ export class RDSStack extends Stack {
         });
 
         this.postgresRDSserverless.connections.allowFromAnyIpv4(Port.tcp(dbPort));
+
+        const attachedSecret = this.dbSecret.attach(this.postgresRDSserverless);
+        new SecretRotation(
+            this,
+            `db-creds-rotation`,
+            {
+                secret: attachedSecret,
+                application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+                vpc: props.vpc,
+                vpcSubnets: { subnetType: SubnetType.PUBLIC },
+                target: this.postgresRDSserverless,
+                automaticallyAfter: Duration.days(30),
+            }
+        );
 
     }
 }
