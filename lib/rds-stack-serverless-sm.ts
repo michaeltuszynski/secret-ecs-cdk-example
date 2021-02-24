@@ -33,10 +33,6 @@ export class RDSStack extends Stack {
             }
         });
 
-        // this.dbSecret = new DatabaseSecret(this, 'DBCreds', {
-        //     username: dbUser
-        // })
-
         this.postgresRDSserverless = new ServerlessCluster(this, 'Postgres-rds-serverless', {
             engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
             parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
@@ -67,6 +63,5 @@ export class RDSStack extends Stack {
                 automaticallyAfter: Duration.days(30),
             }
         );
-
     }
 }
