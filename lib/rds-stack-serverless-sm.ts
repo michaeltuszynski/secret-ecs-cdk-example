@@ -52,12 +52,11 @@ export class RDSStack extends Stack {
 
         this.postgresRDSserverless.connections.allowFromAnyIpv4(Port.tcp(dbPort));
 
-        const attachedSecret = this.dbSecret.attach(this.postgresRDSserverless);
         new SecretRotation(
             this,
             `db-creds-rotation`,
             {
-                secret: attachedSecret,
+                secret: this.dbSecret,
                 application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
                 vpc: props.vpc,
                 vpcSubnets: { subnetType: SubnetType.PUBLIC },
