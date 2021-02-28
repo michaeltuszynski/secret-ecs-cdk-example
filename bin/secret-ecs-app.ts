@@ -1,11 +1,7 @@
 import { App } from '@aws-cdk/core';
 import { VPCStack } from '../lib/vpc-stack';
-//import { RDSStack } from '../lib/rds-stack-serverless-sm';
-import { RDSStack } from '../lib/rds-stack-serverless-ssm';
-//import { ECSStack } from '../lib/ecs-fargate-stack-sm';
-import { ECSStack } from '../lib/ecs-fargate-stack-ssm'
-//import { ECSStack } from '../lib/ecs-ec2-stack-sm';
-
+import { RDSStack } from '../lib/rds-stack';
+import { ECSStack } from '../lib/ecs-fargate-stack';
 
 const cdkEnv = {
     account: process.env.CDK_DEPLOY_ACCOUNT || process.env.AWS_ACCOUNT_ID,
@@ -25,19 +21,10 @@ const rdsStack = new RDSStack(app, 'RDSStack', {
 
 rdsStack.addDependency(vpcStack);
 
-/* Systems Manager Parameter Store*/
-
 const ecsStack = new ECSStack(app, "ECSStack", {
     vpc: vpcStack.vpc,
+    dbSecretArn: rdsStack.dbSecret.secretArn,
     env: cdkEnv
 });
-
-/* Secrets Manager*/
-
-// const ecsStack = new ECSStack(app, "ECSStack", {
-//     vpc: vpcStack.vpc,
-//     dbSecretArn: rdsStack.dbSecret.secretArn,
-//     env: cdkEnv
-// });
 
 ecsStack.addDependency(rdsStack);

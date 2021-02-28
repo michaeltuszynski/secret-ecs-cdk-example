@@ -1,5 +1,5 @@
 {
-  "name": "secret-ecs-app",
+  "name": "secret-ecs-cdk-example",
   "version": "0.1.0",
   "bin": {
     "secret-ecs-app": "bin/secret-ecs-app.js"
