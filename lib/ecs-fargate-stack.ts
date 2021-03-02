@@ -16,14 +16,14 @@ export class ECSStack extends Stack {
 
     const containerPort = this.node.tryGetContext("containerPort");
     const containerImage = this.node.tryGetContext("containerImage");
-    const creds = Secret.fromSecretCompleteArn(this, 'pgcreds', props.dbSecretArn);
+    const creds = Secret.fromSecretCompleteArn(this, 'postgresCreds', props.dbSecretArn);
 
     const cluster = new Cluster(this, 'Cluster', {
       vpc: props.vpc,
-      clusterName: 'FargateClusterDemo'
+      clusterName: 'fargateClusterDemo'
     });
 
-    const fargateService = new ApplicationLoadBalancedFargateService(this, "FargateService", {
+    const fargateService = new ApplicationLoadBalancedFargateService(this, "fargateService", {
       cluster,
       taskImageOptions: {
         image: ContainerImage.fromRegistry(containerImage),
@@ -39,7 +39,7 @@ export class ECSStack extends Stack {
       },
       desiredCount: 1,
       publicLoadBalancer: true,
-      serviceName: 'FargateServiceDemo'
+      serviceName: 'fargateServiceDemo'
     });
   }
 }

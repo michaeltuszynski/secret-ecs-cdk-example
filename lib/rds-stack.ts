@@ -21,7 +21,7 @@ export class RDSStack extends Stack {
         const dbName = this.node.tryGetContext("dbName");
         const dbPort = this.node.tryGetContext("dbPort");
 
-        this.dbSecret = new Secret(this, 'DBCredentialsSecret', {
+        this.dbSecret = new Secret(this, 'dbCredentialsSecret', {
             secretName: "serverless-credentials",
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({
@@ -33,7 +33,7 @@ export class RDSStack extends Stack {
             }
         });
 
-        this.postgresRDSserverless = new ServerlessCluster(this, 'Postgres-rds-serverless', {
+        this.postgresRDSserverless = new ServerlessCluster(this, 'postgresRdsServerless', {
             engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
             parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
             vpc: props.vpc,
@@ -54,7 +54,7 @@ export class RDSStack extends Stack {
 
         new SecretRotation(
             this,
-            `db-creds-rotation`,
+            `dbCredentialsRotation`,
             {
                 secret: this.dbSecret,
                 application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
