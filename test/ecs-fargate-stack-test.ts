@@ -9,7 +9,6 @@ const iVpc = {
     maxAzs: 2
 }
 
-
 test('Fine-Grained Assertions', () => {
     const app = new App();
     // WHEN
