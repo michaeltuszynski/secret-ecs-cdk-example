@@ -54,7 +54,7 @@ export class RDSStack extends Stack {
 
         new SecretRotation(
             this,
-            `dbCredentialsRotation`,
+            `ecsworkshop/test/todo-app/aurora-pg`,
             {
                 secret: this.dbSecret,
                 application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
