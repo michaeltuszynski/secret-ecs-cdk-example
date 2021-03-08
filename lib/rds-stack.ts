@@ -19,10 +19,10 @@ export class RDSStack extends Stack {
 
         const dbUser = this.node.tryGetContext("dbUser");
         const dbName = this.node.tryGetContext("dbName");
-        const dbPort = this.node.tryGetContext("dbPort");
+        const dbPort = this.node.tryGetContext("dbPort") || 5432;
 
         this.dbSecret = new Secret(this, 'dbCredentialsSecret', {
-            secretName: "serverless-credentials",
+            secretName: "ecsworkshop/test/todo-app/aurora-pg",
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({
                     username: dbUser,
