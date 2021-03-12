@@ -1,4 +1,4 @@
-import { App, StackProps, Stack, Duration, RemovalPolicy } from "@aws-cdk/core";
+import { App, StackProps, Stack, Duration, RemovalPolicy, CfnOutput } from "@aws-cdk/core";
 import {
     DatabaseSecret, Credentials, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit
 } from '@aws-cdk/aws-rds';
@@ -63,5 +63,7 @@ export class RDSStack extends Stack {
                 automaticallyAfter: Duration.days(30),
             }
         );
+
+        new CfnOutput(this, 'SecretName', { value: this.dbSecret.secretName });
     }
 }
