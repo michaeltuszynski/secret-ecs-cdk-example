@@ -59,6 +59,7 @@ export class RDSStack extends Stack {
                 secret: this.dbSecret,
                 application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
                 vpc: props.vpc,
+                vpcSubnets: { subnetType: SubnetType.PRIVATE },
                 target: this.postgresRDSserverless,
                 automaticallyAfter: Duration.days(30),
             }
