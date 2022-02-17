@@ -12,6 +12,6 @@
     "dbUser": "postgres",
     "dbPort": 5432,
     "containerPort": 4000,
-    "containerImage": "public.ecr.aws/o0u3i9v5/secret-ecs-repo"
+    "containerImage": "registry.hub.docker.com/mptaws/secretecs"
   }
 }
