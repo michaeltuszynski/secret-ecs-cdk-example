@@ -9,9 +9,9 @@
     "@aws-cdk/aws-kms:defaultKeyPolicies": true,
     "@aws-cdk/aws-s3:grantWriteWithoutAcl": true,
     "dbName": "tododb",
-    "dbUser": "postgres",
-    "dbPort": 5432,
-    "containerPort": 4000,
-    "containerImage": "registry.hub.docker.com/mptaws/secretecs"
+    "dbUser": "admin",
+    "dbPort": 3306,
+    "containerPort": 8000,
+    "containerImage": "registry.hub.docker.com/mptaws/django-demo-app:latest"
   }
 }

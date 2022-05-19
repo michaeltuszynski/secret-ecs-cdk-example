@@ -12,14 +12,14 @@ export interface RDSStackProps extends StackProps {
 export class RDSStack extends Stack {
 
     readonly dbSecret: DatabaseSecret;
-    readonly postgresRDSserverless: ServerlessCluster;
+    readonly mysqlRDSserverless: ServerlessCluster;
 
     constructor(scope: App, id: string, props: RDSStackProps) {
         super(scope, id, props);
 
         const dbUser = this.node.tryGetContext("dbUser");
         const dbName = this.node.tryGetContext("dbName");
-        const dbPort = this.node.tryGetContext("dbPort") || 5432;
+        const dbPort = this.node.tryGetContext("dbPort") || 3306;
 
         this.dbSecret = new Secret(this, 'dbCredentialsSecret', {
             secretName: "ecsworkshop/test/todo-app/aurora-pg",
@@ -33,9 +33,9 @@ export class RDSStack extends Stack {
             }
         });
 
-        this.postgresRDSserverless = new ServerlessCluster(this, 'postgresRdsServerless', {
-            engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
-            parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+        this.mysqlRDSserverless = new ServerlessCluster(this, 'mysqlRdsServerless', {
+            engine: DatabaseClusterEngine.AURORA_MYSQL,
+            parameterGroup: ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-mysql5.7'),
             vpc: props.vpc,
             enableDataApi: true,
             vpcSubnets: { subnetType: SubnetType.PRIVATE },
@@ -50,17 +50,17 @@ export class RDSStack extends Stack {
             removalPolicy: RemovalPolicy.DESTROY
         });
 
-        this.postgresRDSserverless.connections.allowFromAnyIpv4(Port.tcp(dbPort));
+        this.mysqlRDSserverless.connections.allowFromAnyIpv4(Port.tcp(dbPort));
 
         new SecretRotation(
             this,
             `ecsworkshop/test/todo-app/aurora-pg`,
             {
                 secret: this.dbSecret,
-                application: SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER,
+                application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
                 vpc: props.vpc,
                 vpcSubnets: { subnetType: SubnetType.PRIVATE },
-                target: this.postgresRDSserverless,
+                target: this.mysqlRDSserverless,
                 automaticallyAfter: Duration.days(30),
             }
         );
