@@ -27,7 +27,6 @@
     "@aws-cdk/aws-ecs-patterns": "1.104.0",
     "@aws-cdk/aws-rds": "1.104.0",
     "@aws-cdk/aws-secretsmanager": "1.104.0",
-    "@aws-cdk/aws-ssm": "1.104.0",
     "@aws-cdk/core": "1.104.0",
     "source-map-support": "^0.5.16"
   }

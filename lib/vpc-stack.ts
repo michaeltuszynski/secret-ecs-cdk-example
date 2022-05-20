@@ -5,7 +5,7 @@ export interface VpcProps extends StackProps {
     maxAzs: number;
 }
 
-export class VPCStack extends Stack {
+export class VPCDemoStack extends Stack {
     readonly vpc: Vpc;
 
     constructor(scope: Construct, id: string, props: VpcProps) {
@@ -15,7 +15,7 @@ export class VPCStack extends Stack {
             throw new Error('maxAzs must be at least 2.');
         }
 
-        this.vpc = new Vpc(this, 'ecsWorkshopVPC', {
+        this.vpc = new Vpc(this, 'ecsDemoVPC', {
             cidr: "10.0.0.0/16",
             subnetConfiguration: [
                 {

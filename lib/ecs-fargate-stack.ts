@@ -9,14 +9,17 @@ export interface ECSStackProps extends StackProps {
   dbSecretArn: string
 }
 
-export class ECSStack extends Stack {
+export class ECSDemoStack extends Stack {
 
   constructor(scope: App, id: string, props: ECSStackProps) {
     super(scope, id, props);
 
+    const crypto = require("crypto");
+    const djangoSecretKey = crypto.randomBytes(20).toString('hex');
+
     const containerPort = this.node.tryGetContext("containerPort");
     const containerImage = this.node.tryGetContext("containerImage");
-    const creds = Secret.fromSecretCompleteArn(this, 'postgresCreds', props.dbSecretArn);
+    const creds = Secret.fromSecretCompleteArn(this, 'mysqlCreds', props.dbSecretArn);
 
     const cluster = new Cluster(this, 'Cluster', {
       vpc: props.vpc,
@@ -30,7 +33,14 @@ export class ECSStack extends Stack {
         containerPort: containerPort,
         enableLogging: true,
         secrets: {
-          POSTGRES_DATA: ECSSecret.fromSecretsManager(creds)
+          DB_NAME: ECSSecret.fromSecretsManager(creds, 'dbname'),
+          USERNAME: ECSSecret.fromSecretsManager(creds, 'username'),
+          PASSWORD: ECSSecret.fromSecretsManager(creds, 'password'),
+          HOST: ECSSecret.fromSecretsManager(creds, 'host'),
+          PORT: ECSSecret.fromSecretsManager(creds, 'port'),
+        },
+        environment: {
+          SECRET_KEY: djangoSecretKey
         }
       },
       desiredCount: 1,

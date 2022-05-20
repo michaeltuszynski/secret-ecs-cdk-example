@@ -9,7 +9,7 @@ export interface RDSStackProps extends StackProps {
     vpc: Vpc
 }
 
-export class RDSStack extends Stack {
+export class RDSDemoStack extends Stack {
 
     readonly dbSecret: DatabaseSecret;
     readonly mysqlRDSserverless: ServerlessCluster;
@@ -22,7 +22,7 @@ export class RDSStack extends Stack {
         const dbPort = this.node.tryGetContext("dbPort") || 3306;
 
         this.dbSecret = new Secret(this, 'dbCredentialsSecret', {
-            secretName: "ecsworkshop/test/todo-app/aurora-pg",
+            secretName: "ecsworkshop/test/todo-app/aurora-mysql",
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({
                     username: dbUser,
@@ -54,7 +54,7 @@ export class RDSStack extends Stack {
 
         new SecretRotation(
             this,
-            `ecsworkshop/test/todo-app/aurora-pg`,
+            `ecsworkshop/test/todo-app/aurora-mysql`,
             {
                 secret: this.dbSecret,
                 application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
